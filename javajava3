@@ -1,4 +1,4 @@
-import javax.swing.*; 
+import javax.swing.*; //FINAL NA ITO
 import java.util.Scanner;
 
 public class PracticeF1 {
@@ -35,9 +35,7 @@ public class PracticeF1 {
             System.out.println("◦");
             System.out.println("● ➤ 【c】 Track Missing Activities");
             System.out.println("◦");
-            System.out.println("● ➤ 【d】 Record Activity Progress");
-            System.out.println("◦");
-            System.out.println("● ➤ 【e】 E – Clearance Issued");
+            System.out.println("● ➤ 【d】 E – Clearance Issued");
 
             String selection = "";
 
