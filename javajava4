@@ -25,10 +25,7 @@ public void checkClearanceStatus(Scanner input, int selectedIndex) {
     }
 }
 
-//Ito sa Step c
-
-import javax.swing.*;
-import java.util.Scanner;
+//Ito sa Step C-E
 
 public class Solving1 {
     String[] firstNames = new String[30];
@@ -125,6 +122,7 @@ public class Solving1 {
             System.out.println("No students with incomplete activities.");
         }
 
+        generateIncompleteReport(); // Generate report for incomplete students
         proceedToNextStep();
     }
 
@@ -152,15 +150,76 @@ public class Solving1 {
 
     private void proceedToNextStep() {
         System.out.println("\nProceeding to the next step...");
-        System.out.println("Press 'd' to record activity progress.");
+        System.out.println("Press 'e' to issue e-clearance certificates for the students who are complete:");
 
         Scanner input = new Scanner(System.in);
         String proceed = input.next();
-        if (proceed.equalsIgnoreCase("d")) {
-            System.out.println("Recording activity progress...");
+        if (proceed.equalsIgnoreCase("e")) {
+            issueEClearance();
         } else {
             System.out.println("Invalid input. Returning to the main menu.");
         }
+    }
+
+    private void issueEClearance() {
+        int[] clearanceIssued = new int[30]; // Track issued e-clearance
+        int[] sectionCount = new int[30]; // Count of students per section
+        int[] sectionIssuedCount = new int[30]; // Count of issued e-clearance per section
+
+        for (int i = 0; i < studentCount; i++) {
+            if (status[i].equals("Complete")) {
+                clearanceIssued[i] = 1; // Mark as issued
+                sectionCount[getSectionIndex(sections[i])]++;
+                sectionIssuedCount[getSectionIndex(sections[i])]++;
+                JOptionPane.showMessageDialog(null, "E-Clearance Certificate issued for " + firstNames[i] + " " + lastNames[i]);
+            }
+        }
+
+        generateReport(sectionCount, sectionIssuedCount);
+    }
+
+    private int getSectionIndex(String section) {
+        switch (section) {
+            case "A":
+                return 0;
+            case "B":
+                return 1;
+            // Add more sections as needed
+            default:
+                return -1; // Invalid section
+        }
+    }
+
+    private void generateReport(int[] sectionCount, int[] sectionIssuedCount) {
+        System.out.println("\nE-Clearance Issuance Report:");
+        for (int i = 0; i < sectionCount.length; i++) {
+            if (sectionCount[i] > 0) {
+                double percentage = (sectionIssuedCount[i] / (double) sectionCount[i]) * 100;
+                System.out.printf("Class %c: %.2f%% of students have been issued their e-clearance certificate.%n", (char) ('A' + i), percentage);
+            }
+        }
+        System.out.println("End of Program.");
+    }
+
+    private void generateIncompleteReport() {
+        int[] sectionCount = new int[30]; // Count of students per section
+        int incompleteCount = 0; // Total count of incomplete students
+
+        for (int i = 0; i < studentCount; i++) {
+            if (status[i].equals("Incomplete")) {
+                incompleteCount++;
+                sectionCount[getSectionIndex(sections[i])]++;
+            }
+        }
+
+        System.out.println("\nIncomplete Activities Report:");
+        for (int i = 0; i < sectionCount.length; i++) {
+            if (sectionCount[i] > 0) {
+                double percentage = (sectionCount[i] / (double) studentCount) * 100;
+                System.out.printf("Class %c: %.2f%% of students have incomplete activities.%n", (char) ('A' + i), percentage);
+            }
+        }
+        System.out.println("Total Incomplete Students: " + incompleteCount);
     }
 
     private void showStudentDetails(int selectedIndex) {
@@ -218,4 +277,7 @@ public class Solving1 {
 }
 
 
-//Step d
+
+
+
+
