@@ -1,0 +1,234 @@
+import javax.swing.*; //FINAL NA ITO
+import java.util.Scanner;
+
+public class PracticeF1 {
+
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+          
+        // Display login message
+        JOptionPane.showMessageDialog(null, "       Log Into Your E-Clearance Account", 
+                                      "Login", JOptionPane.PLAIN_MESSAGE);
+
+        // Get teacher's name and password using simple input dialogs
+        String teacherName = JOptionPane.showInputDialog("Enter Teacher Name:");
+        String password = JOptionPane.showInputDialog("Enter Password:");
+
+        // Simplified check for empty or null input
+        if (teacherName == null || password == null || teacherName.equals("") || password.equals("")) {
+            // Show error message if login fails
+            JOptionPane.showMessageDialog(null, "Login failed. Please enter valid information.", 
+                                          "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            // Display the main welcome message after logging in
+            JOptionPane.showMessageDialog(null, "Welcome to E-Clearance: Where Learning Meets Simplicity!", 
+                                          "Welcome!", JOptionPane.PLAIN_MESSAGE);
+
+            System.out.println("\nThis system allows you to efficiently manage and track student clearance requirements step by step.");
+            System.out.println("Follow the guide below to process the e-clearance:");
+            System.out.println();
+
+            // Display the menu
+            System.out.println("● ➤ 【a】 Student Records");
+            System.out.println("◦");
+            System.out.println("● ➤ 【b】 Check Clearance Requirements");
+            System.out.println("◦");
+            System.out.println("● ➤ 【c】 Track Missing Activities");
+            System.out.println("◦");
+            System.out.println("● ➤ 【d】 E – Clearance Issued");
+
+            String selection = "";
+
+            while (!selection.equals("a")) {  
+                System.out.print("\nPress 'a' to start: ");
+                selection = input.next();  
+
+                if (selection.equals("a")) {  
+                    System.out.println("\nStarting with Step-by-Step Process: 【a】 Student Records...");
+                    RecHandler studentRecords = new RecHandler();
+
+                    while (studentRecords.choice != 4) {
+                        // Display the menu for student record options
+                        System.out.println("\n[1] Enter Student Records");
+                        System.out.println("[2] Compute Grades");
+                        System.out.println("[3] View all listed student information");
+                        System.out.println("[4] Exit");
+                        System.out.print("Enter the number of your choice: ");
+
+                        if (input.hasNextInt()) {
+                            studentRecords.choice = input.nextInt();
+                            input.nextLine();
+
+                            switch (studentRecords.choice) {
+                                case 1:
+                                    studentRecords.enterStudentRecords(input); 
+                                    break;
+
+                                case 2:
+                                    studentRecords.computeGrades(input);
+                                    break;
+
+                                case 3:
+                                    studentRecords.viewStudentInformation(input); 
+                                    break;
+
+                                    case 4:
+                                    System.out.println("\nProceeding to Step 【b】: Check Clearance Requirements...");
+                                    studentRecords.checkClearanceStatus(input, studentRecords.studentCount - 1);
+                                    break; // Exit without printing any message
+                                default:
+                                    System.out.println("Invalid input. Please enter a number between 1 and 4.");
+                                    break;
+                            }
+                        } else {
+                            System.out.println("Invalid input. Please enter a number between 1 and 4.");
+                            input.nextLine();
+                        }
+                    }
+                } else {
+                    System.out.println("\nInvalid selection! Please press 'a' to start.");
+                }
+            }
+        }
+    }
+
+    static class RecHandler {
+        String[] firstNames = new String[30];
+        String[] lastNames = new String[30];
+        String[] sections = new String[30];
+        int studentCount = 0;
+        int choice = 0;
+
+        int[] performancetaskScores = new int[30];
+        int[] recitScores = new int[30];
+        int[] examScores = new int[30];
+        int[] quizScores = new int[30];
+        int[] performancetaskTotals = new int[30];
+        int[] recitTotals = new int[30];
+        int[] examTotals = new int[30];
+        int[] quizTotals = new int[30];
+
+        public void enterStudentRecords(Scanner input) {
+            if (studentCount < 30) {
+                System.out.print("Enter First Name: ");
+                firstNames[studentCount] = input.nextLine();
+                System.out.print("Enter Last Name: ");
+                lastNames[studentCount] = input.nextLine();
+                System.out.print("Section: ");
+                sections[studentCount] = input.nextLine();
+                studentCount++;
+                System.out.println("Student record added successfully.");
+            } else {
+                System.out.println("Student record limit reached.");
+            }
+        }
+
+        public void computeGrades(Scanner input) {
+            if (studentCount == 0) {
+                System.out.println("No student records found. Please enter records first.");
+                return;
+            }
+
+            System.out.println("\nSelect a student to compute grades:");
+            for (int i = 0; i < studentCount; i++) {
+                System.out.println((i + 1) + ". " + firstNames[i] + " " + lastNames[i]);
+            }
+
+            System.out.print("Enter the number of the student: ");
+            int studentChoice = input.nextInt();
+            input.nextLine();
+
+            if (studentChoice >= 1 && studentChoice <= studentCount) {
+                int selectedIndex = studentChoice - 1;
+                System.out.println("\nComputing grades for: " + firstNames[selectedIndex] + " " + lastNames[selectedIndex]);
+                System.out.println("Section: " + sections[selectedIndex]);
+
+                computeCategory(input, selectedIndex, "Performance Task", performancetaskScores, performancetaskTotals);
+                computeCategory(input, selectedIndex, "Recitations", recitScores, recitTotals);
+                computeSingleCategory(input, selectedIndex, "Exam", examScores, examTotals);
+                computeCategory(input, selectedIndex, "Quizzes", quizScores, quizTotals);
+            } else {
+                System.out.println("Invalid student selection.");
+            }
+        }
+
+        public void computeCategory(Scanner input, int selectedIndex, String categoryName, int[] scores, int[] totals) {
+            System.out.print("Enter the number of " + categoryName + ": ");
+            int numItems = input.nextInt();
+            int totalScore = 0, totalItems = 0;
+
+            for (int j = 1; j <= numItems; j++) {
+                System.out.print(categoryName + " " + j + " Total Items: ");
+                totalItems += input.nextInt();
+                System.out.print(categoryName + " " + j + " Score: ");
+                totalScore += input.nextInt();
+            }
+
+            scores[selectedIndex] = totalScore;
+            totals[selectedIndex] = totalItems;
+
+            System.out.println("TOTAL SCORE (" + categoryName + "): " + totalScore + " / " + totalItems);
+        }
+
+        public void computeSingleCategory(Scanner input, int selectedIndex, String categoryName, int[] scores, int[] totals) {
+            System.out.print("Enter Total Items of " + categoryName + ": ");
+            int totalItems = input.nextInt();
+            System.out.print("Enter " + categoryName + " Score: ");
+            int totalScore = input.nextInt();
+
+            scores[selectedIndex] = totalScore;
+            totals[selectedIndex] = totalItems;
+
+            System.out.println("TOTAL SCORE (" + categoryName + "): " + totalScore + " / " + totalItems);
+        }
+
+        public void viewStudentInformation(Scanner input) {
+            if (studentCount == 0) {
+                System.out.println("No student records to display.");
+                return;
+            }
+
+            System.out.println("\nListed Student Information:");
+            for (int i = 0; i < studentCount; i++) {
+                System.out.println((i + 1) + ". " + firstNames[i] + " " + lastNames[i] + " - " + sections[i]);
+            }
+
+            System.out.print("\nWould you like to see the grades for all students? (y/n): ");
+            String showGrades = input.nextLine();
+
+            if (showGrades.equals("y")) {
+                for (int i = 0; i < studentCount; i++) {
+                    System.out.println("\nGrades for " + firstNames[i] + " " + lastNames[i]);
+                    System.out.println("Performance Task: " + performancetaskScores[i] + " / " + performancetaskTotals[i]);
+                    System.out.println("Recitations: " + recitScores[i] + " / " + recitTotals[i]);
+                    System.out.println("Exam: " + examScores[i] + " / " + examTotals[i]);
+                    System.out.println("Quizzes: " + quizScores[i] + " / " + quizTotals[i]);
+                }
+            }
+        }
+
+        public void checkClearanceStatus(Scanner input, int selectedIndex) {
+            if (studentCount == 0) {
+                System.out.println("No student records available.");
+            } else {
+                System.out.println("\nClearance Status for " + firstNames[selectedIndex] + " " + lastNames[selectedIndex] + ":");
+        
+                String performanceTaskStatus = (performancetaskScores[selectedIndex] == 0 ? "Incomplete" : "Completed");
+                String recitationsStatus = (recitScores[selectedIndex] == 0 ? "Incomplete" : "Completed");
+                String examStatus = (examScores[selectedIndex] == 0 ? "Incomplete" : "Completed");
+                String quizzesStatus = (quizScores[selectedIndex] == 0 ? "Incomplete" : "Completed");
+        
+                System.out.println("Performance Task: " + performanceTaskStatus);
+                System.out.println("Recitations: " + recitationsStatus);
+                System.out.println("Exam: " + examStatus);
+                System.out.println("Quizzes: " + quizzesStatus);
+        
+                if (performancetaskScores[selectedIndex] > 0 && recitScores[selectedIndex] > 0 && examScores[selectedIndex] > 0 && quizScores[selectedIndex] > 0) {
+                    System.out.println("The student is eligible for clearance.");
+                } else {
+                    System.out.println("The student has not completed all clearance requirements and is not yet eligible for clearance.");
+                }
+            }
+        }
+    }
+}
