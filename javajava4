@@ -1,0 +1,221 @@
+//After maiprint yung "Proceeding to Step 【b】: Check Clearance Requirements..." ito ang need mapalabas
+
+// Method to check clearance status for students
+public void checkClearanceStatus(Scanner input, int selectedIndex) {
+    if (studentCount == 0) {
+        System.out.println("No student records available.");
+    } else {
+        System.out.println("\nClearance Status for " + firstNames[selectedIndex] + " " + lastNames[selectedIndex] + ":");
+
+        String performanceTaskStatus = (performancetaskScores[selectedIndex] == 0 ? "Incomplete" : "Completed");
+        String recitationsStatus = (recitScores[selectedIndex] == 0 ? "Incomplete" : "Completed");
+        String examStatus = (examScores[selectedIndex] == 0 ? "Incomplete" : "Completed");
+        String quizzesStatus = (quizScores[selectedIndex] == 0 ? "Incomplete" : "Completed");
+
+        System.out.println("Performance Task: " + performanceTaskStatus);
+        System.out.println("Recitations: " + recitationsStatus);
+        System.out.println("Exam: " + examStatus);
+        System.out.println("Quizzes: " + quizzesStatus);
+
+        if (performancetaskScores[selectedIndex] > 0 && recitScores[selectedIndex] > 0 && examScores[selectedIndex] > 0 && quizScores[selectedIndex] > 0) {
+            System.out.println("The student is eligible for clearance.");
+        } else {
+            System.out.println("The student has not completed all clearance requirements and is not yet eligible for clearance.");
+        }
+    }
+}
+
+//Ito sa Step c
+
+import javax.swing.*;
+import java.util.Scanner;
+
+public class Solving1 {
+    String[] firstNames = new String[30];
+    String[] lastNames = new String[30];
+    String[] sections = new String[30];
+    int studentCount = 0;
+    double[] finalGrades = new double[30];
+    String[] status = new String[30]; // Track student status (Complete/Incomplete)
+
+    int[] performancetaskScores = new int[30];
+    int[] recitScores = new int[30];
+    int[] examScores = new int[30];
+    int[] quizScores = new int[30];
+    int[] performancetaskTotals = new int[30];
+    int[] recitTotals = new int[30];
+    int[] examTotals = new int[30];
+    int[] quizTotals = new int[30];
+
+    public static void main(String[] args) {
+        Solving1 trackActivities = new Solving1();
+        trackActivities.run();
+    }
+
+    public void run() {
+        Scanner input = new Scanner(System.in);
+
+        // Example student data for testing
+        firstNames[0] = "John";
+        lastNames[0] = "Doe";
+        sections[0] = "A";
+        performancetaskScores[0] = 50; recitScores[0] = 40; examScores[0] = 90; quizScores[0] = 80;
+        performancetaskTotals[0] = 50; recitTotals[0] = 50; examTotals[0] = 100; quizTotals[0] = 100;
+        studentCount++;
+
+        firstNames[1] = "Jane";
+        lastNames[1] = "Smith";
+        sections[1] = "B";
+        performancetaskScores[1] = 0; recitScores[1] = 0; examScores[1] = 0; quizScores[1] = 0;
+        performancetaskTotals[1] = 50; recitTotals[1] = 50; examTotals[1] = 100; quizTotals[1] = 100;
+        studentCount++;
+
+        // Calculate final grades
+        for (int i = 0; i < studentCount; i++) {
+            calculateFinalGrade(i);
+        }
+
+        // Start the program
+        System.out.println("Track Missing Activities");
+        System.out.println("Enter 1 if you want to view the students who are Incomplete only.");
+        System.out.println("Enter 2 if you want to view the students who are Complete only.");
+
+        int choice = input.nextInt();
+        if (choice == 1) {
+            viewIncompleteStudents();
+        } else if (choice == 2) {
+            viewCompleteStudents();
+        } else {
+            System.out.println("Invalid choice.");
+        }
+    }
+
+    private void calculateFinalGrade(int studentIndex) {
+        double performancePercentage = (double) performancetaskScores[studentIndex] / performancetaskTotals[studentIndex] * 100;
+        double recitPercentage = (double) recitScores[studentIndex] / recitTotals[studentIndex] * 100;
+        double examPercentage = (double) examScores[studentIndex] / examTotals[studentIndex] * 100;
+        double quizPercentage = (double) quizScores[studentIndex] / quizTotals[studentIndex] * 100;
+
+        double rawGrade = (performancePercentage + recitPercentage + examPercentage + quizPercentage) / 4;
+        finalGrades[studentIndex] = rawGrade;
+
+        if (performancePercentage == 0 || recitPercentage == 0 || examPercentage == 0 || quizPercentage == 0) {
+            status[studentIndex] = "Incomplete";
+        } else {
+            status[studentIndex] = "Complete";
+        }
+    }
+
+    private void viewIncompleteStudents() {
+        System.out.println("\nStudents with Incomplete Activities:");
+        boolean hasIncomplete = false;
+        for (int i = 0; i < studentCount; i++) {
+            if (status[i].equals("Incomplete")) {
+                hasIncomplete = true;
+                System.out.println(i + 1 + ". " + firstNames[i] + " " + lastNames[i] + " - " + sections[i]);
+
+                Scanner input = new Scanner(System.in);
+                System.out.print("Enter student number to view details: ");
+                int studentChoice = input.nextInt() - 1;
+                showStudentDetails(studentChoice);
+            }
+        }
+
+        if (!hasIncomplete) {
+            System.out.println("No students with incomplete activities.");
+        }
+
+        proceedToNextStep();
+    }
+
+    private void viewCompleteStudents() {
+        System.out.println("\nStudents with Complete Activities:");
+        boolean hasComplete = false;
+        for (int i = 0; i < studentCount; i++) {
+            if (status[i].equals("Complete")) {
+                hasComplete = true;
+                System.out.println(i + 1 + ". " + firstNames[i] + " " + lastNames[i] + " - " + sections[i]);
+
+                Scanner input = new Scanner(System.in);
+                System.out.print("Enter student number to view details: ");
+                int studentChoice = input.nextInt() - 1;
+                showStudentDetails(studentChoice);
+            }
+        }
+
+        if (!hasComplete) {
+            System.out.println("No students with complete activities.");
+        }
+
+        proceedToNextStep();
+    }
+
+    private void proceedToNextStep() {
+        System.out.println("\nProceeding to the next step...");
+        System.out.println("Press 'd' to record activity progress.");
+
+        Scanner input = new Scanner(System.in);
+        String proceed = input.next();
+        if (proceed.equalsIgnoreCase("d")) {
+            System.out.println("Recording activity progress...");
+        } else {
+            System.out.println("Invalid input. Returning to the main menu.");
+        }
+    }
+
+    private void showStudentDetails(int selectedIndex) {
+        System.out.println("\nName: " + firstNames[selectedIndex] + " " + lastNames[selectedIndex]);
+        System.out.println("Section: " + sections[selectedIndex]);
+
+        boolean hasIncompleteActivities = false;
+
+        if (performancetaskScores[selectedIndex] == 0) {
+            System.out.println("Performance Task: Incomplete");
+            hasIncompleteActivities = true;
+        } else {
+            System.out.println("Performance Task: " + performancetaskScores[selectedIndex] + " / " + performancetaskTotals[selectedIndex]);
+        }
+
+        if (recitScores[selectedIndex] == 0) {
+            System.out.println("Recitations: Incomplete");
+            hasIncompleteActivities = true;
+        } else {
+            System.out.println("Recitations: " + recitScores[selectedIndex] + " / " + recitTotals[selectedIndex]);
+        }
+
+        if (examScores[selectedIndex] == 0) {
+            System.out.println("Exam: Incomplete");
+            hasIncompleteActivities = true;
+        } else {
+            System.out.println("Exam: " + examScores[selectedIndex] + " / " + examTotals[selectedIndex]);
+        }
+
+        if (quizScores[selectedIndex] == 0) {
+            System.out.println("Quizzes: Incomplete");
+            hasIncompleteActivities = true;
+        } else {
+            System.out.println("Quizzes: " + quizScores[selectedIndex] + " / " + quizTotals[selectedIndex]);
+        }
+
+        double rawGrade = (performancetaskScores[selectedIndex] / (double) performancetaskTotals[selectedIndex] * 0.40
+                + recitScores[selectedIndex] / (double) recitTotals[selectedIndex] * 0.15
+                + examScores[selectedIndex] / (double) examTotals[selectedIndex] * 0.30
+                + quizScores[selectedIndex] / (double) quizTotals[selectedIndex] * 0.15);
+        System.out.println("Raw Grade: " + rawGrade);
+
+        finalGrades[selectedIndex] = (rawGrade * 0.625) + 37.5;
+        System.out.println("Final Grade: " + finalGrades[selectedIndex]);
+
+        if (hasIncompleteActivities) {
+            JDialog dialog = new JDialog();
+            dialog.setTitle("Incomplete Activities");
+            dialog.setAlwaysOnTop(true);
+            JOptionPane.showMessageDialog(dialog, "Kindly comply with your missing activities. Failure to submit within the given time frame will result in an immediate failure and disqualification from obtaining an e-clearance certificate.",
+                    "Warning: Incomplete Activities", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(dialog, "Notification Sent!", "Notification", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+}
+
+
+//Step d
